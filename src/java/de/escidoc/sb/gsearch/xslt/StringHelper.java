@@ -112,7 +112,7 @@ public class StringHelper {
      *            input
      * @return Normalized String.
      */
-    public static synchronized String getNormalizedString(final String input) {
+    public static String getNormalizedString(final String input) {
         if (input == null) {
             return null;
         }
