@@ -416,8 +416,10 @@ public class GenericOperationsImpl implements Operations {
         if (ds != null) {
             dsBuffer = (new TransformerToText().getText(ds, mimetype));
             dataStreamCache.put(new Tupel(pid, dsId), dsBuffer.toString());
-            logger.info("Put to dataStreamCache pid <" + pid + "> dsId <" + dsId + "> <" + dsBuffer.toString() + ">");
-            logger.info("dataStreamCache size after put <" + dataStreamCache.size() + ">");
+            if (logger.isDebugEnabled()) {
+            	logger.debug("Put to dataStreamCache pid <" + pid + "> dsId <" + dsId + "> <" + dsBuffer.toString() + ">");
+            	logger.debug("dataStreamCache size after put <" + dataStreamCache.size() + ">");
+            }
         }
         if (logger.isDebugEnabled())
             logger.debug("getDatastreamText" +
