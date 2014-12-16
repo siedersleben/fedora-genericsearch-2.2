@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.demo.html.HTMLParser;
 import org.apache.pdfbox.cos.COSDocument;
@@ -366,10 +367,10 @@ throws GenericSearchException {
 
             //wait until process is finished
             stdIn = new BufferedReader(
-                    new InputStreamReader(p.getInputStream()));
+                    new InputStreamReader(p.getInputStream(), "UTF-8"));
             errIn = new BufferedReader(
-                    new InputStreamReader(p.getErrorStream()));
-            StringBuffer errBuf = new StringBuffer("");
+                    new InputStreamReader(p.getErrorStream(), "UTF-8"));
+            StringBuffer outBuf = new StringBuffer("");
             long time = System.currentTimeMillis();
             while (true) {
                 try {
@@ -384,7 +385,7 @@ throws GenericSearchException {
                     }
                     if (errIn.ready()) {
                        while ((c = errIn.read()) > -1) {
-                           errBuf.append((char)c);
+                           outBuf.append((char)c);
                        }
                     }
                     if (System.currentTimeMillis() - time > 60000) {
@@ -393,20 +394,13 @@ throws GenericSearchException {
                     }
                 }
             }
-            if (errBuf.length() > 0) {
-                logger.warn("error while transforming pdf "
-                        + "to text with external tool:\n" + errBuf);
+            if (outBuf.length() > 0) {
+                logger.info("transforming pdf to text with external tool:\n" + outBuf);
             }
             
-            //read textfile
-            fileIn = new FileInputStream(outputFileName);            
-            in = new BufferedReader(
-                    new InputStreamReader(fileIn, "UTF-8"));
-            String str = new String("");
-            while ((str = in.readLine()) != null) {
-                textBuffer.append(str).append(" ");
-            }
-            fileIn.close();
+            String out = FileUtils.readFileToString(new File(outputFileName), "UTF-8");
+            logger.debug("string from file <" + out + ">");
+            textBuffer = new StringBuffer(out);         
         } catch (Throwable e) {
             if (errorFlag) {
             	logger.warn(e);
@@ -466,7 +460,9 @@ throws GenericSearchException {
                 outputFile.delete();
             } catch (Exception e) {}
         }
-        
+        if (logger.isDebugEnabled()) {
+        	logger.debug("getTextFromPDFWithExternalTool returning textBuffer <" + textBuffer.toString() + ">");
+        }
         return textBuffer;
     }
     

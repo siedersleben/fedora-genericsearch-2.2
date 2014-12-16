@@ -303,6 +303,10 @@
 			<attach file="${dist.dir}/${app.name}-sources.zip" type="zip" classifier="sources"/>
 		</artifact:install>
 	</target>
+	
+	<target name="install-artifact" depends="install">
+		<copy file="${dist.dir}/${war.name}" todir="c:/tmp/jboss/server/default/deploy" overwrite="true"/>	
+	</target>
 
 	<target name="deploy" depends="install">
 		<!-- deploy war and sources -->

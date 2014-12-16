@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -52,9 +51,6 @@ public class GenericOperationsImpl implements Operations {
         Logger.getLogger(GenericOperationsImpl.class);
 
     private static final Map<String, Object> fedoraRestClients = new HashMap<String, Object>();
-    
-    //cache containing the transformed texts as extracted pdfs
-    private final Map<Tupel, String> dataStreamCache = new ConcurrentHashMap <Tupel, String>();
     
     protected String fgsUserName;
     protected String indexName;
@@ -356,12 +352,14 @@ public class GenericOperationsImpl implements Operations {
         
         if (dsId == null)
         	return "";
-        logger.info("dataStreamCache size <" + dataStreamCache.size() + ">");
-        if (dataStreamCache.containsKey(new Tupel(pid, dsId))) {
-        	String s = dataStreamCache.get(new Tupel(pid, dsId));
-			if (logger.isDebugEnabled()) {
-				logger.debug("Found pid <" + pid + "> dsId <" + dsId + "> in dataStreamCache");						
-				logger.debug("Returning <" + s + ">");						
+        
+        String threadId = Thread.currentThread().toString();
+        logger.info("dataStreamCache size <" + DataStreamCache.getInstance().size() + ">");
+        
+        if (DataStreamCache.getInstance().containsKey(pid, dsId, threadId)) {
+        	String s = DataStreamCache.getInstance().get(pid, dsId, threadId);
+			if (logger.isInfoEnabled()) {
+				logger.info("Found in dataStreamCache " + (new Tripel(pid, dsId, threadId)).toString());											
 			}
         	return s;
         }
@@ -413,18 +411,20 @@ public class GenericOperationsImpl implements Operations {
                 } catch (IOException e) {}
             }
         }
+        
         if (ds != null) {
             dsBuffer = (new TransformerToText().getText(ds, mimetype));
-            dataStreamCache.put(new Tupel(pid, dsId), dsBuffer.toString());
-            if (logger.isDebugEnabled()) {
-            	logger.debug("Put to dataStreamCache pid <" + pid + "> dsId <" + dsId + "> <" + dsBuffer.toString() + ">");
-            	logger.debug("dataStreamCache size after put <" + dataStreamCache.size() + ">");
+            DataStreamCache.getInstance().put(pid, dsId, threadId, dsBuffer.toString());
+            if (logger.isInfoEnabled()) {
+            	logger.info("Put to dataStreamCache " + (new Tripel(pid, dsId, threadId)).toString());
+            	logger.info("dataStreamCache size after put <" + DataStreamCache.getInstance().size() + ">");
             }
         }
         if (logger.isDebugEnabled())
             logger.debug("getDatastreamText" +
                     " pid="+pid+
                     " dsId="+dsId+
+                    " threadId="+threadId+
                     " mimetype="+mimetype+
                     " dsBuffer="+dsBuffer.toString());
         return dsBuffer.toString();
@@ -687,24 +687,26 @@ public class GenericOperationsImpl implements Operations {
         }
     }
     
-    public class Tupel {
+    public class Tripel {
     	private String pid;
     	private String dataStreamId;
+    	private String threadId;
     	
-    	Tupel(final String p, final String ds) {
+    	Tripel(final String p, final String ds, final String t) {
     		this.pid = p;
-    		this.dataStreamId = ds; 		
+    		this.dataStreamId = ds; 	
+    		this.threadId = t;
     	}
     	
     	@Override
     	public int hashCode()
     	{
-    		return pid.hashCode() + dataStreamId.hashCode();
+    		return pid.hashCode() + dataStreamId.hashCode() + threadId.hashCode();
     	}
     	
     	@Override
     	public boolean equals(Object obj) {
-    		if (!(obj instanceof Tupel)) {
+    		if (!(obj instanceof Tripel)) {
     			return false;
     		}
     		if (obj == this) {
@@ -713,13 +715,14 @@ public class GenericOperationsImpl implements Operations {
 			if (obj == null || obj.getClass() != this.getClass())
 				return false;
 
-			Tupel other = (Tupel) obj;
-			boolean b = pid.equals(other.pid) && dataStreamId.equals(other.dataStreamId);	
+			Tripel other = (Tripel) obj;
+			boolean b = pid.equals(other.pid) 
+								&& dataStreamId.equals(other.dataStreamId) && threadId.equals(other.threadId);	
 			return b;
     	}
     	
     	public String toString() {
-    		return "(" + pid + ", " + dataStreamId + ")"; 
+    		return "(" + pid + ", " + dataStreamId + ", " + threadId + ")"; 
     	}
     	
     }
