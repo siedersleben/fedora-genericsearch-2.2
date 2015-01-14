@@ -40,7 +40,10 @@ import org.slf4j.LoggerFactory;
  */
 public final class DataStreamCache {
 
-    private static final int INDEXER_CACHE_SIZE = 40;
+    private static final int LIVE_TIME = 360;
+	private static final int IDLE_TIME = 360;
+
+	private static final int INDEXER_CACHE_SIZE = 40;
 
     private final Cache dataStreamCache;
     private static final Logger logger = LoggerFactory.getLogger(DataStreamCache.class);
@@ -51,7 +54,8 @@ public final class DataStreamCache {
     private DataStreamCache() {
 
         final CacheManager cacheManager = CacheManager.create();
-        this.dataStreamCache = new Cache(new CacheConfiguration("dataStreamCache", INDEXER_CACHE_SIZE));
+        this.dataStreamCache = new Cache(
+        		new CacheConfiguration("dataStreamCache", INDEXER_CACHE_SIZE).timeToIdleSeconds(IDLE_TIME).timeToLiveSeconds(LIVE_TIME));
         cacheManager.addCache(this.dataStreamCache);
     }
 
