@@ -9,8 +9,8 @@
     <property name="javac.debug"               value="on"/>
     <property name="javac.deprecation"         value="on"/>
     <property name="javac.maxwarns"            value="100"/>
-    <property name="javac.source"              value="1.5"/>
-    <property name="javac.target"              value="1.5"/>
+    <property name="javac.source"              value="1.6"/>
+    <property name="javac.target"              value="1.6"/>
 	
 	<property name="sources.dir" 				value="sources" />
 
@@ -32,12 +32,16 @@
 	<property name="dist.dir" location="dist" />
     <property name="lib.dir" location="lib"/>
 	<property name="app.name" value="fedoragsearch" />
+	<property name="jar.name" value="${app.name}.jar" />
 	<property name="war.name" value="${app.name}.war" />
 	<property name="nolibs.war.name" value="${app.name}-nolibs.war" />
 
 	<property name="junit.build.dir"		   location="${build.basedir}/junit"/>
 	<property name="junit.src.dir"             location="src/test/junit"/>	
 
+	<!-- properties to install artifacts -->
+	<property name="install.artifact.dir"             location="c:/tmp/jboss"/>	
+	
 	<!-- properties for deployment to Artifactory -->
 	<property name="artifactory.url" value="http://rd.mpdl.mpg.de/nexus/content/repositories/snapshots" />
 	<property name="artifactory.id" value="snapshots" />
@@ -112,6 +116,8 @@
     </target>
 
     <target name="compile">
+      <delete dir="${dist.dir}" />
+      <delete dir="${build.dir}" />
       <mkdir dir="${compile.dir}"/>
       <javac classpathref="compile.classpath"
              debug="true"
@@ -123,8 +129,7 @@
 	<target name="prep"
             depends="compile"
             description="prepare">
-		<delete dir="${dist.dir}" />
-		<delete dir="${build.dir}" />
+		
 		<delete dir="${eclipseprojects.dir}" />
     <mkdir dir="${eclipseprojects.dir}" />
 		<mkdir dir="${dist.dir}" />
@@ -255,6 +260,14 @@
 		</copy>
 	    <jar jarfile="${dist.dir}/${war.name}" basedir="${build.dir}"/>
 	</target>
+	
+	<target name="build-jar"
+				depends="clean, compile"
+		        description="build the jar">
+			<delete file="${build.dir}/${jar.name}" />
+			
+		    <jar jarfile="${dist.dir}/${jar.name}" basedir="${compile.dir}" excludes="**/EscidocCoreAccessor.class"/>
+	</target>
 
 	<target name="buildlocal"
 		    depends="prep, includeengines"
@@ -294,18 +307,19 @@
     </target>
 	
 
-	<target name="install" depends="binrelease, sources">
+	<target name="install" depends="build-jar, binrelease, sources">
 		<artifact:pom id="memorypom" groupId="org.escidoc" artifactId="${app.name}" version="${build.version}" name="Fedoragsearch for eSciDoc" packaging="war" />
 		<artifact:writepom pomRefId="memorypom" file="${dist.dir}/${app.name}-${build.version}.pom" />
 		<artifact:pom id="filepom" file="${dist.dir}/${app.name}-${build.version}.pom" />
 		<artifact:install file="${dist.dir}/${war.name}">
 			<pom refid="filepom" />
 			<attach file="${dist.dir}/${app.name}-sources.zip" type="zip" classifier="sources"/>
+			<attach file="${dist.dir}/${app.name}.jar" type="jar"/>
 		</artifact:install>
 	</target>
 	
 	<target name="install-artifact" depends="install">
-		<copy file="${dist.dir}/${war.name}" todir="c:/tmp/jboss/server/default/deploy" overwrite="true"/>	
+		<copy file="${dist.dir}/${war.name}" todir="${install.artifact.dir}/jboss/server/default/deploy" overwrite="true"/>	
 	</target>
 
 	<target name="deploy" depends="install">
