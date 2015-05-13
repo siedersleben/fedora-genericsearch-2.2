@@ -74,6 +74,7 @@ public class StringHelper {
      *            character
      * @return String substring of term after last occurence of term1.
      */
+    
     public static String getSubstringAfterLast(
         final String term, final String term1) {
         if (StringUtils.isEmpty(term) || StringUtils.isEmpty(term1) 
@@ -92,7 +93,7 @@ public class StringHelper {
      *            character
      * @return String substring of term after last occurence of term1.
      */
-    public static String getSubstringAfterLast(
+    public static String getSubstringAfterLastForNode(
         final NodeList nodeList, final String term1) {
     	String term = "";
     	if (nodeList != null && nodeList.getLength() == 1) {
