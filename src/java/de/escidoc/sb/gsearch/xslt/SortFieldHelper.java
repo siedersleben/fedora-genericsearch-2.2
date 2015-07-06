@@ -79,12 +79,13 @@ public class SortFieldHelper {
      */
     public static boolean checkSortField(final String sortFieldName) {
     	
-    	logger.info("SortFieldHelper checkSortField <" + sortFieldName + "> for <" + Thread.currentThread().getName() + ">");
-    	
+    	if (logger.isDebugEnabled()) {
+    	logger.debug("SortFieldHelper checkSortField <" + sortFieldName + "> for <" + Thread.currentThread().getName() + ">");
+    	}
     	storedSortFields.put(Thread.currentThread().getName(), new HashMap<String, String>());
     	
         if (storedSortFields.get(Thread.currentThread().getName()).get(sortFieldName) == null) {
-        	storedSortFields.get(Thread.currentThread().getName()) .put(sortFieldName, "");
+        	storedSortFields.get(Thread.currentThread().getName()).put(sortFieldName, "");
             return false;
         }
         return true;
@@ -95,6 +96,8 @@ public class SortFieldHelper {
     	if (storedSortFields.get(Thread.currentThread().getName()) != null) {
         	storedSortFields.remove(Thread.currentThread().getName());
         	logger.info("SortFieldHelper cleanUp called for <" + Thread.currentThread().getName() + ">");
+        } else {
+        	logger.info("CleanUp called for <" + Thread.currentThread().getName() + "> did not found anything stored for this Thread");
         }
   
     }
