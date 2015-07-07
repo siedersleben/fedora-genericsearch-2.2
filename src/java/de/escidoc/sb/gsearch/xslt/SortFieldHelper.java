@@ -80,9 +80,11 @@ public class SortFieldHelper {
     public static boolean checkSortField(final String sortFieldName) {
     	
     	if (logger.isDebugEnabled()) {
-    	logger.debug("SortFieldHelper checkSortField <" + sortFieldName + "> for <" + Thread.currentThread().getName() + ">");
+    		logger.debug("SortFieldHelper checkSortField <" + sortFieldName + "> for <" + Thread.currentThread().getName() + ">");
     	}
-    	storedSortFields.put(Thread.currentThread().getName(), new HashMap<String, String>());
+    	if (storedSortFields.get(Thread.currentThread().getName()) == null) {
+    		storedSortFields.put(Thread.currentThread().getName(), new HashMap<String, String>());
+    	}
     	
         if (storedSortFields.get(Thread.currentThread().getName()).get(sortFieldName) == null) {
         	storedSortFields.get(Thread.currentThread().getName()).put(sortFieldName, "");
@@ -95,7 +97,8 @@ public class SortFieldHelper {
     	
     	if (storedSortFields.get(Thread.currentThread().getName()) != null) {
         	storedSortFields.remove(Thread.currentThread().getName());
-        	logger.info("SortFieldHelper cleanUp called for <" + Thread.currentThread().getName() + ">");
+        	logger.info("cleanUp called for <" + Thread.currentThread().getName() + ">");
+        	logger.info("storedSortFields has size <" + storedSortFields.size() + ">") ;
         } else {
         	logger.info("CleanUp called for <" + Thread.currentThread().getName() + "> did not found anything stored for this Thread");
         }
