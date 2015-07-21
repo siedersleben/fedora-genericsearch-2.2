@@ -29,11 +29,7 @@
 
 package de.escidoc.sb.gsearch.xslt;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 
 /**
@@ -57,11 +53,7 @@ import org.apache.log4j.Logger;
  */
 public class SortFieldHelper {
 
-	private static Logger logger = Logger.getLogger(
-            de.escidoc.sb.gsearch.xslt.SortFieldHelper.class);
-	
-	private static Map<String, HashMap<String, String>> storedSortFields 
-											= Collections.synchronizedMap(new HashMap<String, HashMap<String, String>>());
+    private HashMap<String, String> sortFields = new HashMap<String, String>();
     
     /**
      * constructor.
@@ -77,33 +69,12 @@ public class SortFieldHelper {
      *            sortFieldName
      * @return true if sortField was written before
      */
-    public static boolean checkSortField(final String sortFieldName) {
-    	
-    	if (logger.isDebugEnabled()) {
-    		logger.debug("SortFieldHelper checkSortField <" + sortFieldName + "> for <" + Thread.currentThread().getName() + ">");
-    	}
-    	if (storedSortFields.get(Thread.currentThread().getName()) == null) {
-    		storedSortFields.put(Thread.currentThread().getName(), new HashMap<String, String>());
-    	}
-    	
-        if (storedSortFields.get(Thread.currentThread().getName()).get(sortFieldName) == null) {
-        	storedSortFields.get(Thread.currentThread().getName()).put(sortFieldName, "");
+    public synchronized boolean checkSortField(final String sortFieldName) {
+        if (sortFields.get(sortFieldName) == null) {
+            sortFields.put(sortFieldName, "");
             return false;
         }
         return true;
     }
-    
-    public static void cleanUp() {
-    	
-    	if (storedSortFields.get(Thread.currentThread().getName()) != null) {
-        	storedSortFields.remove(Thread.currentThread().getName());
-        	logger.info("cleanUp called for <" + Thread.currentThread().getName() + ">");
-        	logger.info("storedSortFields has size <" + storedSortFields.size() + ">") ;
-        } else {
-        	logger.info("CleanUp called for <" + Thread.currentThread().getName() + "> did not found anything stored for this Thread");
-        }
-  
-    }
-   
 
 }
