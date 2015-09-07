@@ -63,23 +63,31 @@ public final class DataStreamCache {
         return DataStreamCacheHolder.instance;
     }
     
-	public boolean containsKey(String pid, String dsId, String threadId) {
-		return this.dataStreamCache.get(new Tripel( pid, dsId, threadId)) != null;
+	public boolean containsKey(String pid, String dsId) {
+		
+		return this.dataStreamCache.get(new Tupel( pid, dsId)) != null;
 	}
 	
-	public String get(String pid, String dsId, String threadId) {
-		Element e = this.dataStreamCache.get(new Tripel(pid, dsId, threadId));
+	public String get(String pid, String dsId) {
+		
+		Element e = this.dataStreamCache.get(new Tupel(pid, dsId));
 		
 		if (e == null) {
 			logger.info("No element foud for "
-					+ (new Tripel(pid, dsId, threadId)).toString());
+					+ (new Tupel(pid, dsId)).toString());
 			return "";
 		}
 		return (String) e.getObjectValue();
 	}
 	
-	public void put(String pid, String dsId, String threadId, String string) {
-		this.dataStreamCache.put(new Element(new Tripel(pid, dsId, threadId), string));	
+	public void put(String pid, String dsId, String string) {
+		this.dataStreamCache.put(new Element(new Tupel(pid, dsId), string));	
+		
+		if(pid.endsWith(":LR"))
+		{
+			int idx = pid.lastIndexOf(":LR");
+			this.dataStreamCache.put(new Element(new Tupel(pid.substring(0, idx), dsId), string));
+		}
 	}
 
 	public int size() {
@@ -90,29 +98,27 @@ public final class DataStreamCache {
 		private static final DataStreamCache instance = new DataStreamCache();
 	}
 
-    private class Tripel implements Serializable {
+    private class Tupel implements Serializable {
     	
 		private static final long serialVersionUID = 1L;
 		
 		private String pid;
     	private String dataStreamId;
-    	private String threadId;
     	
-    	Tripel(final String p, final String ds, final String t) {
+    	Tupel(final String p, final String ds) {
     		this.pid = p;
     		this.dataStreamId = ds; 	
-    		this.threadId = t;
     	}
     	
     	@Override
     	public int hashCode()
     	{
-    		return pid.hashCode() + dataStreamId.hashCode() + threadId.hashCode();
+    		return pid.hashCode() + dataStreamId.hashCode();
     	}
     	
     	@Override
     	public boolean equals(Object obj) {
-    		if (!(obj instanceof Tripel)) {
+    		if (!(obj instanceof Tupel)) {
     			return false;
     		}
     		if (obj == this) {
@@ -121,14 +127,14 @@ public final class DataStreamCache {
 			if (obj == null || obj.getClass() != this.getClass())
 				return false;
 
-			Tripel other = (Tripel) obj;
+			Tupel other = (Tupel) obj;
 			boolean b = pid.equals(other.pid) 
-								&& dataStreamId.equals(other.dataStreamId) && threadId.equals(other.threadId);	
+								&& dataStreamId.equals(other.dataStreamId);	
 			return b;
     	}
     	
     	public String toString() {
-    		return "(" + pid + ", " + dataStreamId + ", " + threadId + ")"; 
+    		return "(" + pid + ", " + dataStreamId + ", "  + ")"; 
     	}
     }
 }

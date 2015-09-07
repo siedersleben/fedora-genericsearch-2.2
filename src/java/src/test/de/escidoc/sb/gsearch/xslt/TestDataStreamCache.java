@@ -14,60 +14,74 @@ public class TestDataStreamCache {
 	public void test() {
 		cache.put("escidoc:1111", 
 				"/ir/item/escidoc:1111:4/components/component/escidoc:2060737/content", 
-				"thread-1", "Da steht der Volltext");
+				"Da steht der Volltext");
 		
 		cache.put("escidoc:1111", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-2", "Da steht ein anderer der Volltext");
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content", 
+				"Da steht ein anderer der Volltext");
 		
 		cache.put("escidoc:2111", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-1", "Volltext von escidoc:2111");
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content", 
+				"Volltext von escidoc:2111");
 		
-		cache.put("escidoc:2111", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-12", "Volltext von escidoc:2111 thread-12");
 		
-		assertTrue(cache.size() == 4);
+		assertTrue(cache.size() == 3);
 		
 		String s = cache.get("escidoc:1111", 
-				"/ir/item/escidoc:1111:4/components/component/escidoc:2060737/content", 
-				"thread-1");
-
+				"/ir/item/escidoc:1111:4/components/component/escidoc:2060737/content"); 
 		assertTrue(s.equals("Da steht der Volltext"));
 		
 		s = cache.get("escidoc:1111", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-2");
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content"); 
 		assertTrue(s.equals("Da steht ein anderer der Volltext"));
 		
 		s = cache.get("escidoc:2111", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-1");
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content");
 		assertTrue(s.equals("Volltext von escidoc:2111"));
-		
-		s = cache.get("escidoc:2111", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-12");
-		assertTrue(s.equals("Volltext von escidoc:2111 thread-12"));
-		
+
 		// not found
-		assertFalse(cache.containsKey("xxx", "xxxxx", "yyyyyy"));
+		assertFalse(cache.containsKey("xxx", "xxxxx"));
 		
 		s = cache.get("escidoc:2XXX", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-12");
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content"); 
+				
 		assertTrue(s.equals(""));
 		
 		// UTF-8
 		cache.put("escidoc:3111", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-12", "Tĥïŝ ĩš â fůňķŷ Šťŕĭńġ");
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content", 
+				"Tĥïŝ ĩš â fůňķŷ Šťŕĭńġ");
 		
 		s = cache.get("escidoc:3111", 
-				"/ir/item/escidoc:escidoc:1111/components/component/escidoc:2060737/content", 
-				"thread-12");
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content");
+				
 		assertTrue(s.equals("Tĥïŝ ĩš â fůňķŷ Šťŕĭńġ"));
+		
+		// overwrite
+		cache.put("escidoc:3111", 
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content", 
+				"a normal string");
+		
+		s = cache.get("escidoc:3111", 
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content");
+				
+		assertTrue(s.equals("a normal string"));
+	}
+	
+	@Test
+	public void testLatestReleaseCaching() {
+ 		cache.put("escidoc:4000:LR", 
+				"/ir/item/escidoc:1111/components/component/escidoc:2060737/content", 
+				"a normal string");
+		
+		assertTrue(cache.containsKey("escidoc:4000", "/ir/item/escidoc:1111/components/component/escidoc:2060737/content"));
+		assertTrue(cache.containsKey("escidoc:4000:LR", "/ir/item/escidoc:1111/components/component/escidoc:2060737/content"));
+		
+		String s1 = cache.get("escidoc:4000", "/ir/item/escidoc:1111/components/component/escidoc:2060737/content");
+		String s2 = cache.get("escidoc:4000:LR", "/ir/item/escidoc:1111/components/component/escidoc:2060737/content");
+		
+		assertTrue(s1.equals(s2));
+		
 	}
 
 }

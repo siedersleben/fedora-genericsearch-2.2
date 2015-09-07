@@ -353,13 +353,10 @@ public class GenericOperationsImpl implements Operations {
         if (dsId == null)
         	return "";
         
-        String threadId = Thread.currentThread().toString();
-        logger.info("dataStreamCache size <" + DataStreamCache.getInstance().size() + ">");
-        
-        if (DataStreamCache.getInstance().containsKey(pid, dsId, threadId)) {
-        	String s = DataStreamCache.getInstance().get(pid, dsId, threadId);
+        if (DataStreamCache.getInstance().containsKey(pid, dsId)) {
+        	String s = DataStreamCache.getInstance().get(pid, dsId);
 			if (logger.isInfoEnabled()) {
-				logger.info("Found in dataStreamCache " + (new Tripel(pid, dsId, threadId)).toString());											
+				logger.info("Found in dataStreamCache " + "(" + pid + "," + dsId + ")");											
 			}
         	return s;
         }
@@ -414,9 +411,9 @@ public class GenericOperationsImpl implements Operations {
         
         if (ds != null) {
             dsBuffer = (new TransformerToText().getText(ds, mimetype));
-            DataStreamCache.getInstance().put(pid, dsId, threadId, dsBuffer.toString());
+            DataStreamCache.getInstance().put(pid, dsId, dsBuffer.toString());
             if (logger.isInfoEnabled()) {
-            	logger.info("Put to dataStreamCache " + (new Tripel(pid, dsId, threadId)).toString());
+            	logger.info("Put to dataStreamCache " + "(" + pid + "," + dsId + ")");
             	logger.info("dataStreamCache size after put <" + DataStreamCache.getInstance().size() + ">");
             }
         }
@@ -424,7 +421,6 @@ public class GenericOperationsImpl implements Operations {
             logger.debug("getDatastreamText" +
                     " pid="+pid+
                     " dsId="+dsId+
-                    " threadId="+threadId+
                     " mimetype="+mimetype+
                     " dsBuffer="+dsBuffer.toString());
         return dsBuffer.toString();
@@ -687,44 +683,5 @@ public class GenericOperationsImpl implements Operations {
         }
     }
     
-    public class Tripel {
-    	private String pid;
-    	private String dataStreamId;
-    	private String threadId;
-    	
-    	Tripel(final String p, final String ds, final String t) {
-    		this.pid = p;
-    		this.dataStreamId = ds; 	
-    		this.threadId = t;
-    	}
-    	
-    	@Override
-    	public int hashCode()
-    	{
-    		return pid.hashCode() + dataStreamId.hashCode() + threadId.hashCode();
-    	}
-    	
-    	@Override
-    	public boolean equals(Object obj) {
-    		if (!(obj instanceof Tripel)) {
-    			return false;
-    		}
-    		if (obj == this) {
-                return true;
-            }
-			if (obj == null || obj.getClass() != this.getClass())
-				return false;
 
-			Tripel other = (Tripel) obj;
-			boolean b = pid.equals(other.pid) 
-								&& dataStreamId.equals(other.dataStreamId) && threadId.equals(other.threadId);	
-			return b;
-    	}
-    	
-    	public String toString() {
-    		return "(" + pid + ", " + dataStreamId + ", " + threadId + ")"; 
-    	}
-    	
-    }
-    
 }
