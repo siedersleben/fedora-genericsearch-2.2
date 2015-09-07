@@ -29,11 +29,10 @@
 
 package de.escidoc.sb.gsearch.xslt;
 
-import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.axis.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.NodeList;
 
@@ -118,7 +117,7 @@ public class StringHelper {
             return null;
         }
         
-        String normalizedString = Normalizer.normalize(input.toLowerCase(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+        String normalizedString = StringUtils.stripAccents(input.toLowerCase());
 		if (logger.isTraceEnabled()) {
 			logger.trace("getNormalizedString( " + input + " returning <"
 					+ normalizedString + ">");

@@ -12,7 +12,6 @@ import de.escidoc.sb.gsearch.xslt.StringHelper;
 public class TestStringHelper {
 
 	@Test
-	@Ignore
 	public void testNormalizer() {
 
 		System.out.println("Tĥïŝ ĩš â fůňķŷ Šťŕĭńġ " +
