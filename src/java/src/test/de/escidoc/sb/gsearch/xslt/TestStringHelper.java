@@ -47,23 +47,30 @@ public class TestStringHelper {
 		
 		output = StringHelper.getNormalizedString("Ё");
 		System.out.println("Ё <" + output + ">"); 
-		assertTrue(output.equals("Ё"));
+		assertTrue(output.equals("ё"));
 		
 		output = StringHelper.getNormalizedString("ß");
 		System.out.println("ß <" + output + ">"); 
-		assertTrue(output.equals("ß"));
+		assertTrue(output.equals("ss"));
 		
 		output = StringHelper.getNormalizedString("æ");
 		System.out.println("æ <" + output + ">"); 
-		assertTrue(output.equals("æ"));
+		assertTrue(output.equals("ae"));
 		
 		output = StringHelper.getNormalizedString("ø");
 		System.out.println("ø <" + output + ">"); 
-		assertTrue(output.equals("ø"));
+		assertTrue(output.equals("o"));
 		
 		output = StringHelper.getNormalizedString("ł");
 		System.out.println("ł <" + output + ">"); 
-		assertTrue(output.equals("ł"));
+		assertTrue(output.equals("l"));
+		
+		output = StringHelper.getNormalizedString("AÖÜäöü");
+		System.out.println("AÖÜäöü <" + output + ">"); 
+		assertTrue(output.equals("aouaou"));
+		
+		output = StringHelper.getNormalizedString("Kılıç");
+		System.out.println("Kılıç <" + output + ">"); 
+		assertTrue(output.equals("kilic"));
 	}
-
 }

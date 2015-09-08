@@ -29,11 +29,17 @@
 
 package de.escidoc.sb.gsearch.xslt;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
+import org.apache.lucene.analysis.KeywordAnalyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.w3c.dom.NodeList;
 
 /**
@@ -56,6 +62,8 @@ public class StringHelper {
 
     private static final Matcher MATCHER_ID_WITHOUT_VERSION =
         PATTERN_ID_WITHOUT_VERSION.matcher("");
+
+	private static KeywordAnalyzer analyzer = new KeywordAnalyzer();
 
     static {
         logger =
@@ -116,8 +124,29 @@ public class StringHelper {
         if (input == null) {
             return null;
         }
+        String normalizedString = "";
         
+        TokenStream tokenStream = analyzer.tokenStream("", new StringReader(input));       
+        tokenStream = new ASCIIFoldingFilter(tokenStream);
+        
+        CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
+
+        try {
+			while (tokenStream.incrementToken()) {
+			   /* int startOffset = offsetAttribute.startOffset();
+			    int endOffset = offsetAttribute.endOffset();*/
+			    normalizedString = charTermAttribute.toString();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        /*
         String normalizedString = StringUtils.stripAccents(input.toLowerCase());
+        
+        TokenStream result = new StandardTokenizer(Version.LUCENE_CURRENT, new StringReader(input));
+        result = new ASCIIFoldingFilter (result);
 		if (logger.isTraceEnabled()) {
 			logger.trace("getNormalizedString( " + input + " returning <"
 					+ normalizedString + ">");
@@ -125,9 +154,10 @@ public class StringHelper {
         
         if (null == normalizedString || "".equals(normalizedString)) {
         	return input;
-        }       
+        } 
+        */      
         
-        return normalizedString;
+        return normalizedString.toLowerCase();
     }
 
     /**
