@@ -34,7 +34,7 @@ import java.io.StringReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.axis.utils.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.KeywordAnalyzer;
@@ -55,8 +55,6 @@ import org.w3c.dom.NodeList;
  */
 public class StringHelper {
 
-    private static Logger logger;
-
     private static final Pattern PATTERN_ID_WITHOUT_VERSION =
         Pattern.compile("([a-zA-Z0-9]+:[a-zA-Z0-9]+):[0-9]+");
 
@@ -66,10 +64,9 @@ public class StringHelper {
 	private static KeywordAnalyzer analyzer = new KeywordAnalyzer();
 
     static {
-        logger =
-            Logger
-                .getLogger(
-                de.escidoc.sb.gsearch.xslt.StringHelper.class);
+        Logger
+		    .getLogger(
+		    de.escidoc.sb.gsearch.xslt.StringHelper.class);
     }
 
   /**
@@ -120,7 +117,7 @@ public class StringHelper {
      *            input
      * @return Normalized String.
      */
-    public static String getNormalizedString(final String input) {
+    public static synchronized String getNormalizedString(final String input) {
         if (input == null) {
             return null;
         }
@@ -128,35 +125,16 @@ public class StringHelper {
         
         TokenStream tokenStream = analyzer.tokenStream("", new StringReader(input));       
         tokenStream = new ASCIIFoldingFilter(tokenStream);
-        
-        CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
 
+        CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);        
         try {
 			while (tokenStream.incrementToken()) {
-			   /* int startOffset = offsetAttribute.startOffset();
-			    int endOffset = offsetAttribute.endOffset();*/
 			    normalizedString = charTermAttribute.toString();
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-        /*
-        String normalizedString = StringUtils.stripAccents(input.toLowerCase());
-        
-        TokenStream result = new StandardTokenizer(Version.LUCENE_CURRENT, new StringReader(input));
-        result = new ASCIIFoldingFilter (result);
-		if (logger.isTraceEnabled()) {
-			logger.trace("getNormalizedString( " + input + " returning <"
-					+ normalizedString + ">");
-		}
-        
-        if (null == normalizedString || "".equals(normalizedString)) {
-        	return input;
-        } 
-        */      
-        
+      
         return normalizedString.toLowerCase();
     }
 

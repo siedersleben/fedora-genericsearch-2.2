@@ -262,10 +262,9 @@
 	</target>
 	
 	<target name="build-jar"
-				depends="clean, compile"
+				depends="clean, compile, prep"
 		        description="build the jar">
 			<delete file="${build.dir}/${jar.name}" />
-			
 		    <jar jarfile="${dist.dir}/${jar.name}" basedir="${compile.dir}" excludes="**/EscidocCoreAccessor.class"/>
 	</target>
 
