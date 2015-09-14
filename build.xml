@@ -263,7 +263,7 @@
 	
 	<target name="build-jar"
 				depends="clean, compile"
-		        description="build the jar">
+		        description="build the jar - used for reindexer project">
 			<delete file="${build.dir}/${jar.name}" />
 			<mkdir dir="${dist.dir}" />
 		    <jar jarfile="${dist.dir}/${jar.name}" basedir="${compile.dir}" excludes="**/EscidocCoreAccessor.class"/>
