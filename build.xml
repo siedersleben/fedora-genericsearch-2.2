@@ -302,7 +302,7 @@
 	
     <target name="includeengines" depends="">
         <ant dir="${project.lucene.dir}" inheritAll="false"/>
-        <ant dir="${project.solr.dir}" inheritAll="false"/>
+        <!--ant dir="${project.solr.dir}" inheritAll="false"/-->
         <!--ant dir="../FgsZebra" inheritAll="false"/-->
     </target>
 	
