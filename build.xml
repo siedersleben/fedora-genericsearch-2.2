@@ -262,7 +262,7 @@
 	</target>
 	
 	<target name="build-jar"
-				depends="clean, compile, prep"
+				depends="clean, compile"
 		        description="build the jar">
 			<delete file="${build.dir}/${jar.name}" />
 		    <jar jarfile="${dist.dir}/${jar.name}" basedir="${compile.dir}" excludes="**/EscidocCoreAccessor.class"/>
@@ -326,10 +326,7 @@
 		<artifact:deploy file="${dist.dir}/${war.name}" uniqueVersion="true">
 			<remoteRepository url="${artifactory.url}" id="${artifactory.id}" />
 			<pom refid="filepom" />
-		</artifact:deploy>
-		<artifact:deploy file="${dist.dir}/${jar.name}" uniqueVersion="true">
-			<remoteRepository url="${artifactory.url}" id="${artifactory.id}" />
-			<pom refid="filepom" />
+			<attach file="${dist.dir}/${app.name}.jar" type="jar"/>
 		</artifact:deploy>
 	</target>
 	
