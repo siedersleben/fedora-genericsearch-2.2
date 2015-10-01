@@ -25,6 +25,9 @@ public class TestStringHelper {
 		
 		System.out.println("登録 " + 
 			    Normalizer.normalize("登録".toLowerCase(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")); 
+		
+		System.out.println("Abcd? Def " + 
+			    Normalizer.normalize("Abcd? Def".toLowerCase(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "")); 
 	}
 	
 	@Test
@@ -72,5 +75,9 @@ public class TestStringHelper {
 		output = StringHelper.getNormalizedString("Kılıç");
 		System.out.println("Kılıç <" + output + ">"); 
 		assertTrue(output.equals("kilic"));
+		
+		output = StringHelper.getNormalizedString("Abcd? Def");
+		System.out.println("Abcd? Def <" + output + ">"); 
+		assertTrue(output.equals("abcd? def"));
 	}
 }
