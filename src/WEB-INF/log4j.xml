@@ -17,34 +17,15 @@
     </layout>
   </appender>
   
-<!--appender name="SEARCHFILEOUT" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="datePattern" value="'.'yyyy-MM-dd" />
-    <param name="File" value="${catalina.home}/log/gsearch.log"/>
-    <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%p %d (%c{1}) %m%n"/>
-    </layout>
-    <filter class="org.apache.log4j.varia.StringMatchFilter">
-         <param name="StringToMatch" value="timemeasure" />
-         <param name="AcceptOnMatch" value="true" />
-    </filter>
-    <filter class="org.apache.log4j.varia.DenyAllFilter"/>
-  </appender-->
-
   <logger name="dk.defxws.fedoragsearch" additivity="false">
     <level value="INFO" />
     <appender-ref ref="FILEOUT"/>
     <!--appender-ref ref="SEARCHFILEOUT"/-->
   </logger>
   
-  <logger name="dk.defxws.fgszebra" additivity="false">
-    <level value="INFO" />
-    <appender-ref ref="FILEOUT"/>
-  </logger>
-  
   <logger name="dk.defxws.fgslucene" additivity="false">
     <level value="INFO" />
     <appender-ref ref="FILEOUT"/>
-    <!--appender-ref ref="SEARCHFILEOUT"/-->
   </logger>
 
   <root>
